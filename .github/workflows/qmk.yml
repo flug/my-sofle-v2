@@ -51,14 +51,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+  
+      - name: Create a tag using the commit hash
+        id: create_tag
+        run: |
+          TAG="commit-$(git rev-parse --short HEAD)"
+          echo "TAG_NAME=${TAG}" >> $GITHUB_ENV
+          git tag -a $TAG -m "Automatic build release"
+          git push origin $TAG
+  
       - name: Download firmware artifact
         uses: actions/download-artifact@v3
         with:
           name: firmware
-
+  
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: "Firmware Build - ${{ env.TAG_NAME }}"
           files: firmware/firmware.uf2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
