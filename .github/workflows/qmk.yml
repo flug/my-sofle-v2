@@ -35,21 +35,24 @@ jobs:
         ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
         qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
         mkdir -p firmware
-        mv /home/runner/qmk_firmware/.build/*.uf2 firmware/
+        mv /home/runner/qmk_firmware/.build/*.uf2 firmware.uf2
 
     - name: Upload compiled firmware
       uses: actions/upload-artifact@v3
       with:
         name: compiled-firmware
-        path: firmware/*.uf2
+        path: firmware.uf2
 
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v1.0.${{ github.run_number }}
-        release_name: QMK Firmware Build
-        draft: false
-        prerelease: false
-        files: firmware/*.uf2
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: firmware.uf2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
