@@ -58,11 +58,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: firmware
-  
+
+      - name: Check if firmware file exists
+        run: ls -l firmware/firmware.uf2
+        
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: release-${{ github.sha }}
+          tag_name: "${{ github.event.head_commit.message }}"
           release_name: "Firmware Build - ${{ github.sha }}"
           files: firmware/firmware.uf2
         env:
