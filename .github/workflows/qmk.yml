@@ -62,8 +62,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: realse-${{ GITHUB_SHA }}
-          release_name: "Firmware Build - ${{ GITHUB_SHA }}"
+          tag_name: release-${{ github.sha }}
+          release_name: "Firmware Build - ${{ github.sha }}"
           files: firmware/firmware.uf2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
