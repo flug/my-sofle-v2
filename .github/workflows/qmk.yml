@@ -35,5 +35,5 @@ jobs:
         ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
         qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
         mkdir -p firmware
-        mv .build/*.uf2 firmware/
+        mv /home/runner/qmk_firmware/.build/*.uf2 firmware/
 
