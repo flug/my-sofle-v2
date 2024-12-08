@@ -58,10 +58,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: firmware
-
+          path: ./firmware
+          
       - name: Check if firmware file exists
         run: ls -l firmware/firmware.uf2
-        
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
