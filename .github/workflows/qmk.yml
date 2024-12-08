@@ -6,7 +6,7 @@ on:
       - main
     tags:
       - "v*"
-  
+
   pull_request:
     branches:
       - main
@@ -16,46 +16,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install QMK CLI
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install qmk
+      - name: Install QMK CLI
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install qmk
 
-    - name: Fetch QMK Firmware
-      run: qmk setup --yes
+      - name: Fetch QMK Firmware
+        run: qmk setup --yes
 
-    - name: Compile firmware
-      run: | 
-        qmk json2c map/keymap.json > default/keymap.c 
-        ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
-        qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
-        mkdir -p firmware
-        mv /home/runner/qmk_firmware/.build/*.uf2 firmware.uf2
+      - name: Compile firmware
+        run: | 
+          qmk json2c map/keymap.json > default/keymap.c 
+          ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
+          qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
+          mkdir -p firmware
+          mv /home/runner/qmk_firmware/.build/*.uf2 firmware/firmware.uf2
 
-    - name: Upload compiled firmware
-      uses: actions/upload-artifact@v3
-      with:
-        name: compiled-firmware
-        path: firmware.uf2
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: firmware/firmware.uf2
 
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Download firmware artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: firmware
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1            
+        uses: softprops/action-gh-release@v1
         with:
-          files: firmware.uf2
+          files: firmware/firmware.uf2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
