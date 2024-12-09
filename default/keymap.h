@@ -96,20 +96,20 @@ bool oled_task_user(void) {
         oled_write_raw_P(logo, sizeof(logo));
     } else {
         // Affiche les informations de couche active sur l'écran esclave
-        oled_write_ln_P(PSTR("Layer: "), false);
+        oled_write_ln_P(PSTR("Mode: "), false);
 
         switch (get_highest_layer(layer_state)) {
             case 0:
-                oled_write_ln("Mode: Normal", false);
+                oled_write_ln("Normal", false);
                 break;
             case 1:
-                oled_write_ln("Mode: Standard", false);
+                oled_write_ln("Standard", false);
                 break;
             case 4:
-                oled_write_ln("Mode: Gaming", false);
+                oled_write_ln("Gaming", false);
                 break;
             default:
-                oled_write_ln("Mode: Inconnu", false);
+                oled_write_ln("Inconnu", false);
                 break;
         }
     }
@@ -124,7 +124,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_WH_D); // Mouse Wheel Down
         }
     } else if (index == 1) { // Encodeur de droite
-       static uint8_t current_layer = 0; // Layer actif
+        static uint8_t current_layer = 0; // Layer actif
         const uint8_t total_layers = 3; // Nombre total de layers (change selon ton keymap)
 
         if (clockwise) {
@@ -134,9 +134,10 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         }
 
         layer_move(current_layer); // Active le layer correspondant
+
+        // Forcer la mise à jour de l'écran
+        oled_clear(); // Nettoie l'écran
     }
 
     return true; // Indique que l'action est gérée ici
 }
-
-
