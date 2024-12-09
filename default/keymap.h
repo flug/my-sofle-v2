@@ -100,16 +100,17 @@ bool oled_task_user(void) {
 
         switch (get_highest_layer(layer_state)) {
             case 0:
-                oled_write_ln_P(PSTR("Base"), false); // Nom de la couche 0
+                oled_write_ln("Mode: Normal", false);
                 break;
             case 1:
-                oled_write_ln_P(PSTR("Fn"), false); // Nom de la couche 1
+                oled_write_ln("Mode: Standard", false);
                 break;
-            case 2:
-                oled_write_ln_P(PSTR("Media"), false); // Nom de la couche 2
+            case 4:
+                oled_write_ln("Mode: Gaming", false);
                 break;
             default:
-                oled_write_ln_P(PSTR("Unknown"), false); // Couche inconnue
+                oled_write_ln("Mode: Inconnu", false);
+                break;
         }
     }
     return false; // Empêche le dessin par défaut du clavier
@@ -123,11 +124,16 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_WH_D); // Mouse Wheel Down
         }
     } else if (index == 1) { // Encodeur de droite
+       static uint8_t current_layer = 0; // Layer actif
+        const uint8_t total_layers = 3; // Nombre total de layers (change selon ton keymap)
+
         if (clockwise) {
-            tap_code(KC_MNXT); // Next track
+            current_layer = (current_layer + 1) % total_layers; // Incrémente, revient à 0 si dépasse
         } else {
-            tap_code(KC_MPRV); // Previous track
+            current_layer = (current_layer == 0) ? total_layers - 1 : current_layer - 1; // Décrémente, revient au max si sous 0
         }
+
+        layer_move(current_layer); // Active le layer correspondant
     }
 
     return true; // Indique que l'action est gérée ici
