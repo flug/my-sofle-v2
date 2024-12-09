@@ -125,7 +125,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 layer_state_t layer_state_set_user(layer_state_t state) {
 
     if (!is_keyboard_master()) { 
-         oled_clear(); // Nettoie l'écran actif
+      
 
         // Affiche les informations de couche active sur l'écran esclave
         oled_write_ln_P(PSTR("Mode: "), false);
