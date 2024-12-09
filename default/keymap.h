@@ -94,39 +94,7 @@ bool oled_task_user(void) {
     if (is_keyboard_master()) {
         // Affiche l'image/logo sur l'écran principal (côté maître)
         oled_write_raw_P(logo, sizeof(logo));
-    } 
-    return false; // Empêche le dessin par défaut du clavier
-}
-
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) { // Encodeur de gauche
-        if (clockwise) {
-            tap_code(KC_WH_U); // Mouse Wheel Up
-        } else {
-            tap_code(KC_WH_D); // Mouse Wheel Down
-        }
-    } else if (index == 1) { // Encodeur de droite
-        static uint8_t current_layer = 0; // Layer actif
-        const uint8_t total_layers = 3; // Nombre total de layers (change selon ton keymap)
-
-        if (clockwise) {
-            current_layer = (current_layer + 1) % total_layers; // Incrémente, revient à 0 si dépasse
-        } else {
-            current_layer = (current_layer == 0) ? total_layers - 1 : current_layer - 1; // Décrémente, revient au max si sous 0
-        }
-
-        layer_move(current_layer); // Active le layer correspondant
-
-    }
-
-    return true; // Indique que l'action est gérée ici
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-
-    if (!is_keyboard_master()) { 
-      
-
+    } else {
         // Affiche les informations de couche active sur l'écran esclave
         oled_write_ln_P(PSTR("Mode: "), false);
 
@@ -145,6 +113,23 @@ layer_state_t layer_state_set_user(layer_state_t state) {
                 break;
         }
     }
+    return false; // Empêche le dessin par défaut du clavier
+} 
 
-    return state;
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    if (index == 0) { // Encodeur de gauche
+        if (clockwise) {
+            tap_code(KC_WH_U); // Mouse Wheel Up
+        } else {
+            tap_code(KC_WH_D); // Mouse Wheel Down
+        }
+    } else if (index == 1) { // Encodeur de droite
+        if (clockwise) {
+            tap_code(KC_MNXT); // Next track
+        } else {
+            tap_code(KC_MPRV); // Previous track
+        }
+    }
+
+    return true; // Indique que l'action est gérée ici
 }
