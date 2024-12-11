@@ -91,13 +91,9 @@ static const char PROGMEM logo[] = {
     0x00, 0x00,
 };
 
-
 // Variables pour gérer le dé-bouncing des encodeurs
 static uint32_t last_encoder_update_time[2] = {0, 0}; // Deux encodeurs
 const uint32_t encoder_update_interval = 50; // Intervalle minimal entre deux mises à jour en millisecondes
-
-// Variables pour gérer l'affichage des couches actives
-static uint8_t current_layer = 0;
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
@@ -107,18 +103,18 @@ bool oled_task_user(void) {
         // Affiche les informations de couche active sur l'écran esclave
         oled_write_ln_P(PSTR("Mode: "), false);
 
-        switch (current_layer) {
+        switch (get_highest_layer(layer_state)) {
             case 0:
-                oled_write_ln("Normal", false);
+                oled_write_ln_P(PSTR("Normal"), false);
                 break;
             case 1:
-                oled_write_ln("Standard", false);
+                oled_write_ln_P(PSTR("Standard"), false);
                 break;
             case 4:
-                oled_write_ln("Gaming", false);
+                oled_write_ln_P(PSTR("Gaming"), false);
                 break;
             default:
-                oled_write_ln("Inconnu", false);
+                oled_write_ln_P(PSTR("Inconnu"), false);
                 break;
         }
     }
@@ -140,40 +136,38 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_WH_D); // Mouse Wheel Down
         }
     } else if (index == 1) { // Encodeur de droite
+        uint8_t next_layer = 0;
         if (clockwise) {
-            current_layer = (current_layer + 1) % 3; // Passe à la couche suivante (0 -> 1 -> 4 -> 0)
-            layer_move(current_layer);
+            next_layer = (get_highest_layer(layer_state) + 1) % 3; // Passe à la couche suivante (0 -> 1 -> 4 -> 0)
         } else {
-            current_layer = (current_layer == 0) ? 2 : current_layer - 1; // Reviens à la couche précédente
-            layer_move(current_layer);
+            next_layer = (get_highest_layer(layer_state) == 0) ? 2 : get_highest_layer(layer_state) - 1; // Revient à la couche précédente
         }
+        layer_move(next_layer);
     }
 
     return true; // Indique que l'action est gérée ici
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    if (!is_keyboard_master()) {
-        return state; // S'assure que cette partie ne tourne que sur le maître
-    }
+    // Met à jour l'OLED en fonction du changement de couche
+    if (is_keyboard_master()) {
+        oled_clear();
+        oled_write_ln_P(PSTR("Mode: "), false);
 
-    // Appelle une mise à jour de l'OLED
-    oled_clear();
-    oled_write_ln_P(PSTR("Mode: "), false);
-
-    switch (get_highest_layer(state)) {
-        case 0:
-            oled_write_ln_P(PSTR("Normal"), false);
-            break;
-        case 1:
-            oled_write_ln_P(PSTR("Standard"), false);
-            break;
-        case 4:
-            oled_write_ln_P(PSTR("Gaming"), false);
-            break;
-        default:
-            oled_write_ln_P(PSTR("Inconnu"), false);
-            break;
+        switch (get_highest_layer(state)) {
+            case 0:
+                oled_write_ln_P(PSTR("Normal"), false);
+                break;
+            case 1:
+                oled_write_ln_P(PSTR("Standard"), false);
+                break;
+            case 4:
+                oled_write_ln_P(PSTR("Gaming"), false);
+                break;
+            default:
+                oled_write_ln_P(PSTR("Inconnu"), false);
+                break;
+        }
     }
 
     return state;
