@@ -362,7 +362,7 @@ static const char layer_icons[][512] PROGMEM ={
     0x00, 0x00,
 }
 
-}
+};
 
 // Variables pour gérer le dé-bouncing des encodeurs
 static uint32_t last_encoder_update_time[2] = {0, 0}; // Deux encodeurs
