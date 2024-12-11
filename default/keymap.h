@@ -100,7 +100,7 @@ const uint32_t encoder_update_interval = 50; // Intervalle minimal entre deux mi
 static uint8_t current_layer = 0;
 
 bool oled_task_user(void) {
-    if (is_keyboard_master()) {
+    if (!is_keyboard_master()) {
         // Affiche le logo sur l'écran principal (côté maître)
         oled_write_raw_P(logo, sizeof(logo));
     } 
@@ -135,7 +135,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    if (is_keyboard_master()) {
+    if (!is_keyboard_master()) {
         return state; // S'assure que cette partie ne tourne que sur le maître
     }
 
