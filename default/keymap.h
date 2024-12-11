@@ -153,7 +153,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    if (!is_keyboard_master()) {
+    if (is_keyboard_master()) {
         return state; // S'assure que cette partie ne tourne que sur le maître
     }
 
