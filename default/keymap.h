@@ -411,9 +411,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         return state; // S'assure que cette partie ne tourne que sur le maître
     }
 
-    // Appelle une mise à jour de l'OLED
-     oled_write_ln_P(PSTR("Mode: "), false);
-
     switch (get_highest_layer(state)) {
         case 0:
             oled_write_raw_P(layer_icons[_DEFAULT], _IMAGE_SIZE);
