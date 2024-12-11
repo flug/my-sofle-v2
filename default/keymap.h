@@ -101,8 +101,26 @@ static uint8_t current_layer = 0;
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
-        // Affiche le logo sur l'écran maître
+        // Affiche le logo sur l'écran principal (côté maître)
         oled_write_raw_P(logo, sizeof(logo));
+    } else {
+        // Affiche les informations de couche active sur l'écran esclave
+        oled_write_ln_P(PSTR("Mode: "), false);
+
+        switch (current_layer) {
+            case 0:
+                oled_write_ln("Normal", false);
+                break;
+            case 1:
+                oled_write_ln("Standard", false);
+                break;
+            case 4:
+                oled_write_ln("Gaming", false);
+                break;
+            default:
+                oled_write_ln("Inconnu", false);
+                break;
+        }
     }
     return false; // Empêche le dessin par défaut du clavier
 }
@@ -136,23 +154,27 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (!is_keyboard_master()) {
-        oled_clear();
-        oled_write_ln_P(PSTR("Mode: "), false);
-
-        switch (get_highest_layer(state)) {
-            case 0:
-                oled_write_ln_P(PSTR("Normal"), false);
-                break;
-            case 1:
-                oled_write_ln_P(PSTR("Standard"), false);
-                break;
-            case 4:
-                oled_write_ln_P(PSTR("Gaming"), false);
-                break;
-            default:
-                oled_write_ln_P(PSTR("Inconnu"), false);
-                break;
-        }
+        return state; // S'assure que cette partie ne tourne que sur le maître
     }
+
+    // Appelle une mise à jour de l'OLED
+    oled_clear();
+    oled_write_ln_P(PSTR("Mode: "), false);
+
+    switch (get_highest_layer(state)) {
+        case 0:
+            oled_write_ln_P(PSTR("Normal"), false);
+            break;
+        case 1:
+            oled_write_ln_P(PSTR("Standard"), false);
+            break;
+        case 4:
+            oled_write_ln_P(PSTR("Gaming"), false);
+            break;
+        default:
+            oled_write_ln_P(PSTR("Inconnu"), false);
+            break;
+    }
+
     return state;
 }
