@@ -410,16 +410,16 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     if (!is_keyboard_master()) {
         return state; // S'assure que cette partie ne tourne que sur le maître
     }
-
+     oled_write_ln_P(PSTR("Mode: "), false);
     switch (get_highest_layer(state)) {
         case 0:
-            oled_write_raw_P(layer_icons[_DEFAULT], sizeof(layer_icons[_DEFAULT]));
+            oled_write_raw_P(layer_icons[_DEFAULT], _IMAGE_SIZE);
             break;
         case 1:
-            oled_write_raw_P(layer_icons[_PERCENT], sizeof(layer_icons[_PERCENT]));
+            oled_write_raw_P(layer_icons[_PERCENT], _IMAGE_SIZE);
             break;
         case 4:
-            oled_write_raw_P(layer_icons[_CODE], sizeof(layer_icons[_CODE]));
+            oled_write_raw_P(layer_icons[_CODE], _IMAGE_SIZE);
             break;
         default:
             oled_write_ln_P(PSTR("Inconnu"), false);
