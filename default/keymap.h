@@ -413,13 +413,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     switch (get_highest_layer(state)) {
         case 0:
-            oled_write_raw_P(layer_icons[_DEFAULT], _IMAGE_SIZE);
+            oled_write_raw_P(layer_icons[_DEFAULT], size(layer_icons[_DEFAULT]));
             break;
         case 1:
-            oled_write_raw_P(layer_icons[_PERCENT], _IMAGE_SIZE);
+            oled_write_raw_P(layer_icons[_PERCENT], size(layer_icons[_PERCENT]));
             break;
         case 4:
-            oled_write_raw_P(layer_icons[_CODE], _IMAGE_SIZE);
+            oled_write_raw_P(layer_icons[_CODE], size(layer_icons[_CODE]));
             break;
         default:
             oled_write_ln_P(PSTR("Inconnu"), false);
