@@ -140,8 +140,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     }
 
     // Appelle une mise à jour de l'OLED
-    oled_clear();
-    oled_write_ln_P(PSTR("Mode: "), false);
+     oled_write_ln_P(PSTR("Mode: "), false);
 
     switch (get_highest_layer(state)) {
         case 0:
