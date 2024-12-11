@@ -2,6 +2,11 @@
 
 #include "timer.h" // Nécessaire pour gérer les timers dans QMK
 
+#define _DEFAULT 0
+#define _PERCENT 1
+#define _CODE 2
+#define _IMAGE_SIZE 512
+
 static const char logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -90,11 +95,8 @@ static const char logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00,
 };
-#define _DEFAULT = 0 
-#define _PERCENT  = 1 
-#define _CODE = 2
-#define _IMAGE_SIZE = 512 
-static const char layer_icons[][_IMAGE_SIZE]={
+
+static const uint8_t layer_icons[][_IMAGE_SIZE]={
     [_DEFAUT] = {
     0x00, 0x00, 0xF8, 0xF8, 0x18, 0x18,
     0x18, 0x38, 0xF0, 0xE0, 0x00, 0x00,
@@ -414,13 +416,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     switch (get_highest_layer(state)) {
         case 0:
-            oled_write_ln_P(layer_icons[_DEFAULT]);
+            oled_write_ln_P(layer_icons[_DEFAULT], _IMAGE_SIZE);
             break;
         case 1:
-            oled_write_ln_P(layer_icons[_PERCENT]);
+            oled_write_ln_P(layer_icons[_PERCENT], _IMAGE_SIZE);
             break;
         case 4:
-            oled_write_ln_P(layer_icons[_CODE]);
+            oled_write_ln_P(layer_icons[_CODE], _IMAGE_SIZE);
             break;
         default:
             oled_write_ln_P(PSTR("Inconnu"), false);
