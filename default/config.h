@@ -29,4 +29,3 @@
  * LEDS
  */
 #define RGBLED_NUM 2  
-#define RGBLED_SPLIT {1, 1}
