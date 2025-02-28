@@ -27,5 +27,6 @@
 #define MASTER_LEFT
 #define WS2812_RGBW
 
-#define RGBLED_NUM 8
-#define RGBLED_SPLIT { 4, 4 }
+#undef RGBLED_NUM
+#define RGBLED_NUM 12
+#undef RGBLED_SPLIT
