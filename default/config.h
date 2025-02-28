@@ -25,7 +25,7 @@
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_TRANSPORT_MIRROR
 #define MASTER_LEFT
-/**
- * LEDS
- */
-#define RGBLED_NUM 2  
+#define WS2812_RGBW
+
+#define RGBLED_NUM 8
+#define RGBLED_SPLIT { 4, 4 }
