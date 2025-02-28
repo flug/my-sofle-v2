@@ -25,5 +25,12 @@
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_TRANSPORT_MIRROR
 #define MASTER_LEFT
-#define RGBLED_NUM 8
-#define RGBLED_SPLIT { 4, 4 }
+/**
+ * LEDS
+ */
+#undef WS2812_DI_PIN  
+#define WS2812_DI_PIN 25  
+#undef RGBLED_NUM  
+#define RGBLED_NUM 2  
+#undef RGBLED_SPLIT  
+#define RGBLED_SPLIT {1, 1}
