@@ -28,5 +28,7 @@
 #define WS2812_RGBW
 
 #undef RGBLED_NUM
-#define RGBLED_NUM 12
-#undef RGBLED_SPLIT
+#define RGBLED_NUM 15
+#ifndef RGBLIGHT_LED_COUNT
+#    define RGBLIGHT_LED_COUNT 70
+#endif
