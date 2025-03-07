@@ -1,5 +1,8 @@
 AUDIO_ENABLE = no
 SPLIT_KEYBOARD = yes
 SPLIT_USB_DETECT = yes
-RGBLIGHT_ENABLE = yes # Enables QMK's RGB code  
-WS2812_DRIVER = vendor # Use the RP2040's PIO interface
+
+RGB_MATRIX_ENABLE = yes
+RGB_MATRIX_DRIVER = WS2812
+RGB_MATRIX_SERIAL_DRIVER = yes
+RGB_MATRIX_SPLIT_USB_DRIVER = yes # Si vous utilisez un câble TRRS pour connecter les deux moitiés
