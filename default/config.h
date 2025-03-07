@@ -26,18 +26,17 @@
 #define SPLIT_TRANSPORT_MIRROR
 #define MASTER_LEFT 
 
-// On n'active pas RGB_MATRIX_ENABLE ici car il est déjà défini ailleurs
-#define RGBLIGHT_ENABLE
 
-// Nombre maximum de LEDs (ajustez selon votre configuration)
-#define DRIVER_LED_TOTAL 70  // Ajustez ce nombre selon le nombre total de LEDs sur votre clavier
 
-// Configurations pour les LEDs RGB
+// Configuration des LEDs RGB
 #define RGB_MATRIX_KEYPRESSES
 #define RGB_MATRIX_HUE_STEP 8
 #define RGB_MATRIX_SAT_STEP 8
 #define RGB_MATRIX_VAL_STEP 8
 #define RGB_MATRIX_SPD_STEP 10
+
+// Désactiver RGBLIGHT car il semble causer des problèmes
+#undef RGBLIGHT_ENABLE
 
 // Désactiver tous les effets pour économiser de l'espace
 #define DISABLE_RGB_MATRIX_ALPHAS_MODS

@@ -430,7 +430,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 
-
+// Configuration de la couleur blanche pour les LEDs RGB
 void keyboard_post_init_user(void) {
     // Activer les LEDs RGB
     rgb_matrix_enable();
@@ -438,14 +438,9 @@ void keyboard_post_init_user(void) {
     // Définir la couleur blanche fixe (mode RGB)
     rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
     
+    // Définir la luminosité (ajustez selon vos préférences)
+    rgb_matrix_set_brightness(128);
+    
     // Désactiver tous les effets d'animation
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
-}
-
-// Fonction optionnelle qui sera appelée lors du démarrage du clavier
-void matrix_init_user(void) {
-    // Définir la couleur blanche fixe pour les underglows également
-    rgblight_enable();
-    rgblight_sethsv(0, 0, 255);
-    rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
 }
