@@ -431,17 +431,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 
-void keyboard_post_init_user(void) {
-    // Active l’RGB Light
-    rgblight_enable_noeeprom(); 
-    // Met la couleur en blanc (R=255, G=255, B=255)
-    rgblight_sethsv(255, 255, 255);
-    // Pour être certain de rester en mode statique (pas d'effet)
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-    // Active l’RGB Matrix
-    rgb_matrix_enable_noeeprom();
-    // Mets la couleur en blanc (hue=0, sat=0, val=255 = max)
-    rgb_matrix_sethsv_noeeprom(0, 0, 255);
-    // Sélectionne un mode statique
-    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+void keyboard_post_init_user(void) {  
+    // Initialize RGB to static black  
+    rgblight_enable_noeeprom();  
+    rgblight_sethsv_noeeprom(HSV_BLACK);  
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);  
+    rgblight_setrgb_at(255, 0, 0, 0);  
 }
