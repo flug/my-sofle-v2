@@ -1,7 +1,6 @@
 #pragma once
 
-#include "timer.h" // Nécessaire pour gérer les timers dans QMK
-#include "rgb_matrix.h"
+#include "timer.h" 
 
 #define _DEFAULT 0
 #define _PERCENT 1
@@ -432,16 +431,21 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 
 
-void rgb_matrix_indicators_user(void) {
-  rgb_matrix_set_color_all(255, 255, 255); // Blanc fixe pour toutes les LED
+void keyboard_post_init_user(void) {
+    // Activer les LEDs RGB
+    rgb_matrix_enable();
+    
+    // Définir la couleur blanche fixe (mode RGB)
+    rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
+    
+    // Désactiver tous les effets d'animation
+    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
 }
 
-void rgb_matrix_mode_change(uint8_t mode) {
-  if (mode == 0) { // Mode par défaut
-    rgb_matrix_indicators_user(); // Appliquer l'effet blanc fixe
-  }
-}
-
+// Fonction optionnelle qui sera appelée lors du démarrage du clavier
 void matrix_init_user(void) {
-  rgb_matrix_mode_change(0); // Appliquer l'effet blanc fixe au démarrage
+    // Définir la couleur blanche fixe pour les underglows également
+    rgblight_enable();
+    rgblight_sethsv(0, 0, 255);
+    rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
 }
