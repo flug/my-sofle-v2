@@ -435,7 +435,7 @@ void keyboard_post_init_user(void) {
     // Active l’RGB Light
     rgblight_enable_noeeprom(); 
     // Met la couleur en blanc (R=255, G=255, B=255)
-    rgblight_setrgb(255, 255, 255);
+    rgblight_sethsv(255, 255, 255);
     // Pour être certain de rester en mode statique (pas d'effet)
     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
     // Active l’RGB Matrix
