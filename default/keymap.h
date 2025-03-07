@@ -1,6 +1,7 @@
 #pragma once
 
 #include "timer.h" // Nécessaire pour gérer les timers dans QMK
+#include "quantum.h"
 
 #define _DEFAULT 0
 #define _PERCENT 1
@@ -427,4 +428,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     }
 
     return state;
+}
+
+
+void keyboard_post_init_user(void) {
+    // Active l’RGB Light
+    rgblight_enable_noeeprom(); 
+    // Met la couleur en blanc (R=255, G=255, B=255)
+    rgblight_setrgb(255, 255, 255);
+    // Pour être certain de rester en mode statique (pas d'effet)
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+    // Active l’RGB Matrix
+    rgb_matrix_enable_noeeprom();
+    // Mets la couleur en blanc (hue=0, sat=0, val=255 = max)
+    rgb_matrix_sethsv_noeeprom(0, 0, 255);
+    // Sélectionne un mode statique
+    rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
 }
