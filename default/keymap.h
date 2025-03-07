@@ -438,9 +438,6 @@ void keyboard_post_init_user(void) {
     // Définir la couleur blanche fixe (mode RGB)
     rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
     
-    // Définir la luminosité (ajustez selon vos préférences)
-    rgb_matrix_set_brightness(128);
-    
     // Désactiver tous les effets d'animation
     rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
 }
