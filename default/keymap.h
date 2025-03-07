@@ -1,7 +1,6 @@
 #pragma once
 
 #include "timer.h" // Nécessaire pour gérer les timers dans QMK
-#include "quantum.h"
 
 #define _DEFAULT 0
 #define _PERCENT 1
