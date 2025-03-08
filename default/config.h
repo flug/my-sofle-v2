@@ -36,7 +36,7 @@
 #define RGB_MATRIX_SPD_STEP 10
 
 // Désactiver RGBLIGHT car il semble causer des problèmes
-#undef RGBLIGHT_ENABLE
+#define RGBLIGHT_ENABLE
 
 // Désactiver tous les effets pour économiser de l'espace
 #define DISABLE_RGB_MATRIX_ALPHAS_MODS
@@ -82,7 +82,3 @@
 #define DISABLE_RGB_MATRIX_SOLID_SPLASH
 #define DISABLE_RGB_MATRIX_SOLID_MULTISPLASH
 #define SPLIT_RGB_MATRIX_ENABLE
-
-#ifdef SPLIT_KEYBOARD
-  #define RGB_MATRIX_SPLIT { 12, 12 }
-#endif
