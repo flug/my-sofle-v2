@@ -15,6 +15,7 @@
  */
 
 #pragma once
+#include "quantum.h" 
 
 #define RGB_MATRIX_SLEEP
 #define RGB_MATRIX_KEYPRESSES
