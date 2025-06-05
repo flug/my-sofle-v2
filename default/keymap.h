@@ -1,6 +1,8 @@
 #pragma once
 
-#include "timer.h" 
+#include "timer.h"
+#include "pointing_device.h"
+#include "rgb_matrix.h"
 
 #define _DEFAULT 0
 #define _PERCENT 1
@@ -497,7 +499,8 @@ void keyboard_post_init_user(void) {
     rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
     
     // Activer l'effet goutte d'eau (solid reactive)
-    rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE_SIMPLE);
+    // Utiliser l'ID de l'effet au lieu de la constante qui n'est pas disponible
+    rgb_matrix_mode_noeeprom(1);  // Mode 1 correspond à SOLID_REACTIVE_SIMPLE dans la plupart des configurations
     
     // Configurer la vitesse de l'effet (plus petit = plus rapide)
     rgb_matrix_set_speed(128);
