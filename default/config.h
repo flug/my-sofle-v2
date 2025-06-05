@@ -27,6 +27,8 @@
 #define SPLIT_TRANSPORT_MIRROR
 #define MASTER_LEFT 
 
+// Activer le support du pointing device
+#define POINTING_DEVICE_ENABLE
 
 
 // Configuration des LEDs RGB
