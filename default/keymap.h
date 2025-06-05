@@ -22,8 +22,8 @@ static uint8_t current_layer = 0;
 
 bool oled_task_user(void) {
     if (!is_keyboard_master()) {
-        // Affiche le logo sur l'écran principal (côté maître)
-        oled_write_raw_P(logo, sizeof(logo));
+        // Affiche l'icône de la couche actuelle sur l'écran secondaire
+        oled_write_raw_P(layer_icons[current_layer], sizeof(layer_icons[0]));
     } 
     return false; // Empêche le dessin par défaut du clavier
 }
