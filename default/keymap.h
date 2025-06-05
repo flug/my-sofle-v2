@@ -1,8 +1,9 @@
 #pragma once
 
 #include "timer.h"
-#include "quantum/pointing_device.h"
-#include "quantum/rgb_matrix.h"
+// Utiliser les chemins standards de QMK
+#include "pointing_device.h"
+#include "rgb_matrix.h"
 
 #define _DEFAULT 0
 #define _PERCENT 1
