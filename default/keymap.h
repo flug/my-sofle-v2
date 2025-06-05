@@ -10,6 +10,38 @@
 #define _CODE 2
 #define _IMAGE_SIZE 512
 
+// Fonction pour envoyer un événement de défilement de souris sans affecter le volume
+void send_mouse_scroll(bool is_up) {
+    report_mouse_t report = pointing_device_get_report();
+    if (is_up) {
+        report.v = -1; // Scroll up
+    } else {
+        report.v = 1;  // Scroll down
+    }
+    pointing_device_set_report(report);
+    pointing_device_send();
+}
+
+// Fonction pour gérer les encodeurs rotatifs
+bool encoder_update_user(uint8_t index, bool clockwise) {
+    if (index == 0) {
+        // Encodeur gauche - défilement souris sans modifier le volume
+        if (clockwise) {
+            send_mouse_scroll(true);
+        } else {
+            send_mouse_scroll(false);
+        }
+    } else if (index == 1) {
+        // Encodeur droit - comportement par défaut (volume)
+        if (clockwise) {
+            tap_code(KC_VOLU);
+        } else {
+            tap_code(KC_VOLD);
+        }
+    }
+    return false;
+}
+
 static const char PROGMEM logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -367,6 +399,41 @@ static const char layer_icons[][512] PROGMEM ={
 
 };
 
+// Fonction pour intercepter les touches !@#$% et les remplacer par des commandes multimédia
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Vérifier si nous sommes dans la couche _PERCENT
+    if (IS_LAYER_ON(_PERCENT)) {
+        switch (keycode) {
+            case KC_EXLM:  // !
+                if (record->event.pressed) {
+                    tap_code(KC_MEDIA_PLAY_PAUSE);
+                }
+                return false;
+            case KC_AT:    // @
+                if (record->event.pressed) {
+                    tap_code(KC_MEDIA_PREV_TRACK);
+                }
+                return false;
+            case KC_HASH:  // #
+                if (record->event.pressed) {
+                    tap_code(KC_MEDIA_NEXT_TRACK);
+                }
+                return false;
+            case KC_DLR:   // $
+                if (record->event.pressed) {
+                    tap_code(KC_AUDIO_MUTE);
+                }
+                return false;
+            case KC_PERC:  // %
+                if (record->event.pressed) {
+                    tap_code(KC_AUDIO_VOL_DOWN);
+                }
+                return false;
+        }
+    }
+    return true;
+}
+
 // Variables pour gérer le dé-bouncing des encodeurs
 static uint32_t last_encoder_update_time[2] = {0, 0}; // Deux encodeurs
 const uint32_t encoder_update_interval = 50; // Intervalle minimal entre deux mises à jour en millisecondes
@@ -380,6 +447,22 @@ bool oled_task_user(void) {
         oled_write_raw_P(logo, sizeof(logo));
     } 
     return false; // Empêche le dessin par défaut du clavier
+}
+
+// Configuration des LEDs RGB avec effet goutte d'eau
+void keyboard_post_init_user(void) {
+    // Activer les LEDs RGB
+    rgb_matrix_enable();
+    
+    // Définir la couleur de base blanche (mode RGB)
+    rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
+    
+    // Activer l'effet goutte d'eau (solid reactive)
+    // Utiliser l'ID de l'effet au lieu de la constante qui n'est pas disponible
+    rgb_matrix_mode_noeeprom(1);  // Mode 1 correspond à SOLID_REACTIVE_SIMPLE dans la plupart des configurations
+    
+    // Configurer la vitesse de l'effet (plus petit = plus rapide)
+    rgb_matrix_set_speed(128);
 }
 
 // Fonction pour envoyer uniquement des événements de défilement de souris sans affecter le volume
