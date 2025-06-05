@@ -32,9 +32,10 @@
 // Configuration des LEDs RGB
 #define RGB_MATRIX_KEYPRESSES
 #define RGB_MATRIX_HUE_STEP 8
-#define RGB_MATRIX_SAT_STEP 8 
-#define RGB_MATRIX_VAL_STEP 8
-#define RGB_MATRIX_SPD_STEP 10
+// Les définitions suivantes sont commentées car elles sont déjà définies dans rgb_matrix.h
+// #define RGB_MATRIX_SAT_STEP 8 
+// #define RGB_MATRIX_VAL_STEP 8
+// #define RGB_MATRIX_SPD_STEP 10
 
 // Désactiver RGBLIGHT car il semble causer des problèmes
 #define RGBLIGHT_ENABLE
