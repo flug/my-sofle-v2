@@ -1,46 +1,14 @@
 #pragma once
 
 #include "timer.h"
-// Utiliser les chemins standards de QMK
-#include "pointing_device.h"
+// Inclure uniquement rgb_matrix.h et quantum.h
 #include "rgb_matrix.h"
+#include "quantum.h"
 
 #define _DEFAULT 0
 #define _PERCENT 1
 #define _CODE 2
 #define _IMAGE_SIZE 512
-
-// Fonction pour envoyer un événement de défilement de souris sans affecter le volume
-void send_mouse_scroll(bool is_up) {
-    report_mouse_t report = pointing_device_get_report();
-    if (is_up) {
-        report.v = -1; // Scroll up
-    } else {
-        report.v = 1;  // Scroll down
-    }
-    pointing_device_set_report(report);
-    pointing_device_send();
-}
-
-// Fonction pour gérer les encodeurs rotatifs
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        // Encodeur gauche - défilement souris sans modifier le volume
-        if (clockwise) {
-            send_mouse_scroll(true);
-        } else {
-            send_mouse_scroll(false);
-        }
-    } else if (index == 1) {
-        // Encodeur droit - comportement par défaut (volume)
-        if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
-    }
-    return false;
-}
 
 static const char PROGMEM logo[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -466,18 +434,15 @@ void keyboard_post_init_user(void) {
 }
 
 // Fonction pour envoyer uniquement des événements de défilement de souris sans affecter le volume
+// Utilise les keycodes standard au lieu des fonctions pointing_device
 void send_mouse_scroll(bool is_up) {
-    // Utiliser les rapports HID directs pour le défilement de la souris
-    report_mouse_t report = pointing_device_get_report();
-    
     if (is_up) {
-        report.v = -1; // Défilement vers le haut (valeur négative)
+        register_code(KC_MS_WH_UP);
+        unregister_code(KC_MS_WH_UP);
     } else {
-        report.v = 1;  // Défilement vers le bas (valeur positive)
+        register_code(KC_MS_WH_DOWN);
+        unregister_code(KC_MS_WH_DOWN);
     }
-    
-    pointing_device_set_report(report);
-    pointing_device_send();
 }
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
