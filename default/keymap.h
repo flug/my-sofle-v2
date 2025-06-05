@@ -379,6 +379,21 @@ bool oled_task_user(void) {
     return false; // Empêche le dessin par défaut du clavier
 }
 
+// Fonction pour envoyer uniquement des événements de défilement de souris sans affecter le volume
+void send_mouse_scroll(bool is_up) {
+    // Utiliser les rapports HID directs pour le défilement de la souris
+    report_mouse_t report = pointing_device_get_report();
+    
+    if (is_up) {
+        report.v = -1; // Défilement vers le haut (valeur négative)
+    } else {
+        report.v = 1;  // Défilement vers le bas (valeur positive)
+    }
+    
+    pointing_device_set_report(report);
+    pointing_device_send();
+}
+
 bool encoder_update_user(uint8_t index, bool clockwise) {
     uint32_t current_time = timer_read32();
     if (current_time - last_encoder_update_time[index] < encoder_update_interval) {
@@ -389,13 +404,13 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
     if (index == 0) { // Encodeur de gauche
         if (clockwise) {
-            tap_code(KC_WH_U); // Mouse Wheel Up
+            send_mouse_scroll(true); // Défilement vers le haut sans affecter le volume
         } else {
-            tap_code(KC_WH_D); // Mouse Wheel Down
+            send_mouse_scroll(false); // Défilement vers le bas sans affecter le volume
         }
     } else if (index == 1) { // Encodeur de droite
         if (clockwise) {
-            current_layer = (current_layer + 1) % 3; // Passe à la couche suivante (0 -> 1 -> 4 -> 0)
+            current_layer = (current_layer + 1) % 3; // Passe à la couche suivante (0 -> 1 -> 2 -> 0)
             layer_move(current_layer);
         } else {
             current_layer = (current_layer == 0) ? 2 : current_layer - 1; // Reviens à la couche précédente
@@ -404,6 +419,49 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
 
     return true; // Indique que l'action est gérée ici
+}
+
+// Fonction pour gérer les touches multimédia dans la couche _PERCENT
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Vérifie si nous sommes dans la couche _PERCENT
+    if (IS_LAYER_ON(_PERCENT)) {
+        // Intercepte les touches !@#$% et les remplace par des touches multimédia
+        switch (keycode) {
+            case KC_EXLM:  // Touche !
+                if (record->event.pressed) {
+                    tap_code(KC_MPLY);  // Play/Pause
+                    return false;  // Ne pas traiter la touche originale
+                }
+                break;
+            case KC_AT:    // Touche @
+                if (record->event.pressed) {
+                    tap_code(KC_MPRV);  // Piste précédente
+                    return false;  // Ne pas traiter la touche originale
+                }
+                break;
+            case KC_HASH:  // Touche #
+                if (record->event.pressed) {
+                    tap_code(KC_MNXT);  // Piste suivante
+                    return false;  // Ne pas traiter la touche originale
+                }
+                break;
+            case KC_DLR:   // Touche $
+                if (record->event.pressed) {
+                    tap_code(KC_MUTE);  // Muet
+                    return false;  // Ne pas traiter la touche originale
+                }
+                break;
+            case KC_PERC:  // Touche %
+                if (record->event.pressed) {
+                    tap_code(KC_VOLD);  // Volume -
+                    return false;  // Ne pas traiter la touche originale
+                }
+                break;
+        }
+    }
+    
+    // Traitement normal pour toutes les autres touches
+    return true;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -418,7 +476,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         case 1:
             oled_write_raw_P(layer_icons[_PERCENT], _IMAGE_SIZE);
             break;
-        case 4:
+        case 2:  // Corrigé de 4 à 2 pour correspondre à la définition _CODE
             oled_write_raw_P(layer_icons[_CODE], _IMAGE_SIZE);
             break;
         default:
@@ -430,14 +488,17 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 
-// Configuration de la couleur blanche pour les LEDs RGB
+// Configuration des LEDs RGB avec effet goutte d'eau
 void keyboard_post_init_user(void) {
     // Activer les LEDs RGB
     rgb_matrix_enable();
     
-    // Définir la couleur blanche fixe (mode RGB)
+    // Définir la couleur de base blanche (mode RGB)
     rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
     
-    // Désactiver tous les effets d'animation
-    rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+    // Activer l'effet goutte d'eau (solid reactive)
+    rgb_matrix_mode(RGB_MATRIX_SOLID_REACTIVE_SIMPLE);
+    
+    // Configurer la vitesse de l'effet (plus petit = plus rapide)
+    rgb_matrix_set_speed(128);
 }
