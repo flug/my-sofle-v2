@@ -36,10 +36,22 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi
+          sudo apt-get install -y avr-libc gcc-avr
+          sudo apt-get install -y dfu-util dfu-programmer avrdude
+
       - name: Install QMK CLI
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install qmk
+
+      - name: Verify toolchain installation
+        run: |
+          arm-none-eabi-gcc --version
+          echo "ARM toolchain installed successfully"
 
       - name: Fetch QMK Firmware
         run: |
@@ -55,10 +67,18 @@ jobs:
       - name: Compile firmware
         run: |
           qmk json2c map/keymap.json > default/keymap.c
-          ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
+          ln -s $GITHUB_WORKSPACE/default ~/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
           qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
           mkdir -p firmware
-          mv /home/runner/qmk_firmware/.build/*.uf2 firmware/firmware.uf2
+          if ls ~/qmk_firmware/.build/*.uf2 1> /dev/null 2>&1; then
+            mv ~/qmk_firmware/.build/*.uf2 firmware/firmware.uf2
+            echo "Firmware compiled successfully: firmware/firmware.uf2"
+            ls -lh firmware/firmware.uf2
+          else
+            echo "Error: No .uf2 file found after compilation"
+            ls -la ~/qmk_firmware/.build/
+            exit 1
+          fi
 
       - name: Generate build info
         run: |
