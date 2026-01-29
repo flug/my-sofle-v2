@@ -59,11 +59,9 @@ void keyboard_post_init_user(void) {
 // Utilise les keycodes standard au lieu des fonctions pointing_device
 void send_mouse_scroll(bool is_up) {
     if (is_up) {
-        register_code(KC_MS_WH_UP);
-        unregister_code(KC_MS_WH_UP);
+        tap_code(KC_WH_U);  // Mouse wheel up
     } else {
-        register_code(KC_MS_WH_DOWN);
-        unregister_code(KC_MS_WH_DOWN);
+        tap_code(KC_WH_D);  // Mouse wheel down
     }
 }
 
