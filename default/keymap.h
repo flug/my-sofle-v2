@@ -59,9 +59,9 @@ void keyboard_post_init_user(void) {
 // Utilise les keycodes standard au lieu des fonctions pointing_device
 void send_mouse_scroll(bool is_up) {
     if (is_up) {
-        tap_code(KC_WH_U);  // Mouse wheel up
+        tap_code16(MS_WHUP);  // Mouse wheel up
     } else {
-        tap_code(KC_WH_D);  // Mouse wheel down
+        tap_code16(MS_WHDN);  // Mouse wheel down
     }
 }
 
