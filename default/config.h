@@ -15,7 +15,6 @@
  */
 
 #pragma once
-#include "quantum.h"
 
 // Configuration du clavier split
 #define SPLIT_LAYER_STATE_ENABLE
