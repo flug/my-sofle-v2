@@ -1,9 +1,20 @@
 #pragma once
 
 #include "timer.h"
-// Inclure uniquement rgb_matrix.h et quantum.h
-#include "rgb_matrix.h"
 #include "quantum.h"
+#include "rgb_matrix.h"
+
+// Custom keycodes pour RGB_MATRIX (remplace les keycodes RGBLIGHT non disponibles)
+enum custom_keycodes {
+    RGB_TOG = SAFE_RANGE,
+    RGB_MOD,
+    RGB_HUI,
+    RGB_HUD,
+    RGB_SAI,
+    RGB_SAD,
+    RGB_VAI,
+    RGB_VAD
+};
 
 #define _DEFAULT 0
 #define _PERCENT 1
@@ -85,6 +96,50 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 // Fonction pour gérer les touches multimédia dans la couche _PERCENT
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // Gestion des keycodes RGB_MATRIX custom
+    switch (keycode) {
+        case RGB_TOG:
+            if (record->event.pressed) {
+                rgb_matrix_toggle();
+            }
+            return false;
+        case RGB_MOD:
+            if (record->event.pressed) {
+                rgb_matrix_step();
+            }
+            return false;
+        case RGB_HUI:
+            if (record->event.pressed) {
+                rgb_matrix_increase_hue();
+            }
+            return false;
+        case RGB_HUD:
+            if (record->event.pressed) {
+                rgb_matrix_decrease_hue();
+            }
+            return false;
+        case RGB_SAI:
+            if (record->event.pressed) {
+                rgb_matrix_increase_sat();
+            }
+            return false;
+        case RGB_SAD:
+            if (record->event.pressed) {
+                rgb_matrix_decrease_sat();
+            }
+            return false;
+        case RGB_VAI:
+            if (record->event.pressed) {
+                rgb_matrix_increase_val();
+            }
+            return false;
+        case RGB_VAD:
+            if (record->event.pressed) {
+                rgb_matrix_decrease_val();
+            }
+            return false;
+    }
+
     // Vérifie si nous sommes dans la couche _PERCENT
     if (IS_LAYER_ON(_PERCENT)) {
         // Intercepte les touches !@#$% et les remplace par des touches multimédia

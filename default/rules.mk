@@ -10,4 +10,4 @@ RGBLIGHT_ENABLE = no
 EXTRAFLAGS += -flto
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
-MOUSEKEY_ENABLE = no
+MOUSEKEY_ENABLE = yes  # Nécessaire pour KC_MS_WH_UP/DOWN (scroll souris encodeur)

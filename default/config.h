@@ -25,11 +25,7 @@
 #define ENABLE_RGB_MATRIX_CYCLE_LEFT_RIGHT
 #define SPLIT_LAYER_STATE_ENABLE
 #define SPLIT_TRANSPORT_MIRROR
-#define MASTER_LEFT 
-
-// Activer le support du pointing device
-#define POINTING_DEVICE_ENABLE
-
+#define MASTER_LEFT
 
 // Configuration des LEDs RGB
 #define RGB_MATRIX_KEYPRESSES
@@ -38,9 +34,6 @@
 // #define RGB_MATRIX_SAT_STEP 8 
 // #define RGB_MATRIX_VAL_STEP 8
 // #define RGB_MATRIX_SPD_STEP 10
-
-// Désactiver RGBLIGHT car il semble causer des problèmes
-#define RGBLIGHT_ENABLE
 
 // Désactiver tous les effets pour économiser de l'espace
 #define DISABLE_RGB_MATRIX_ALPHAS_MODS
