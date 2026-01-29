@@ -1,2 +1,38 @@
+# Fichiers générés par QMK
 default/keymap.c
-*.bat
+
+# Scripts de copie Windows spécifiques à l'environnement
+copy_to_qmk.bat
+
+# Mais garder les scripts utiles
+!compile_qmk.bat
+
+# Fichiers de build
+*.hex
+*.bin
+*.elf
+*.uf2
+*.map
+
+# Dossiers de build
+.build/
+build/
+
+# Fichiers d'éditeur
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# OS
+Thumbs.db
+.DS_Store
