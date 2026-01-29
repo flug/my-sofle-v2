@@ -11,6 +11,18 @@ on:
     branches:
       - main
 
+  # Build automatique hebdomadaire avec la dernière version de QMK
+  schedule:
+    - cron: '0 2 * * 1'  # Tous les lundis à 2h du matin UTC
+
+  # Permet de déclencher manuellement un build
+  workflow_dispatch:
+    inputs:
+      qmk_branch:
+        description: 'QMK branch to use (default: master)'
+        required: false
+        default: 'master'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,43 +42,103 @@ jobs:
           python3 -m pip install qmk
 
       - name: Fetch QMK Firmware
-        run: qmk setup --yes
+        run: |
+          qmk setup --yes
+          cd ~/qmk_firmware
+          # Récupère la dernière version de QMK
+          git fetch origin
+          git checkout ${{ github.event.inputs.qmk_branch || 'master' }}
+          git pull origin ${{ github.event.inputs.qmk_branch || 'master' }}
+          echo "QMK_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "QMK_DATE=$(git log -1 --format=%cd --date=short)" >> $GITHUB_ENV
 
       - name: Compile firmware
-        run: | 
-          qmk json2c map/keymap.json > default/keymap.c 
+        run: |
+          qmk json2c map/keymap.json > default/keymap.c
           ln -s $GITHUB_WORKSPACE/default /home/runner/qmk_firmware/keyboards/splitkb/aurora/sofle_v2/keymaps/custom
           qmk compile -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
           mkdir -p firmware
           mv /home/runner/qmk_firmware/.build/*.uf2 firmware/firmware.uf2
 
+      - name: Generate build info
+        run: |
+          cat > firmware/build-info.txt << EOF
+          Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          QMK Firmware Version: $QMK_VERSION
+          QMK Firmware Date: $QMK_DATE
+          Repository: ${{ github.repository }}
+          Commit: ${{ github.sha }}
+          Triggered by: ${{ github.event_name }}
+          EOF
+          cat firmware/build-info.txt
+
       - name: Upload firmware artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: firmware/firmware.uf2
+          path: firmware/*
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    # Créer une release seulement pour les push sur main, les tags, les builds planifiés et manuels
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-  
+
       - name: Download firmware artifact
         uses: actions/download-artifact@v4
         with:
           name: firmware
           path: ./firmware
-          
+
       - name: Check if firmware file exists
-        run: ls -l firmware/firmware.uf2
+        run: ls -l firmware/
+
+      - name: Determine release tag and type
+        id: release_info
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "tag_name=auto-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+            echo "release_type=Automatic Weekly Build" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "tag_name=manual-$(date +%Y%m%d-%H%M)" >> $GITHUB_OUTPUT
+            echo "release_type=Manual Build" >> $GITHUB_OUTPUT
+          else
+            echo "tag_name=Release-${{github.run_number}}" >> $GITHUB_OUTPUT
+            echo "release_type=Standard Release" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create release notes
+        run: |
+          cat > release-notes.md << 'EOF'
+          ## ${{ steps.release_info.outputs.release_type }}
+
+          ### Build Information
+          $(cat firmware/build-info.txt)
+
+          ### Installation
+          1. Téléchargez le fichier `firmware.uf2`
+          2. Mettez votre clavier en mode bootloader (double-appui sur le bouton reset)
+          3. Copiez le fichier `.uf2` sur le lecteur qui apparaît
+          4. Le clavier redémarrera automatiquement avec le nouveau firmware
+
+          ### Changelog
+          Firmware compilé avec les dernières fonctionnalités et corrections de bugs de QMK.
+          EOF
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
-        with: 
-          tag_name: "Release-${{github.run_number}}"
-          files: firmware/firmware.uf2
+        with:
+          tag_name: ${{ steps.release_info.outputs.tag_name }}
+          name: ${{ steps.release_info.outputs.release_type }} - $(date +%Y-%m-%d)
+          body_path: release-notes.md
+          files: |
+            firmware/firmware.uf2
+            firmware/build-info.txt
+          draft: false
+          prerelease: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
