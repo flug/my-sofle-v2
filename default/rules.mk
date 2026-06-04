@@ -1,6 +1,7 @@
 AUDIO_ENABLE = no
 SPLIT_KEYBOARD = yes
 SPLIT_USB_DETECT = yes
+VIA_ENABLE = yes
 
 # Activer RGB_MATRIX et désactiver RGBLIGHT
 RGB_MATRIX_ENABLE = yes
