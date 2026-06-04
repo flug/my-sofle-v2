@@ -4,55 +4,51 @@
 #include "quantum.h"
 #include "rgb_matrix.h"
 
-// Custom keycodes pour RGB_MATRIX (remplace les keycodes RGBLIGHT non disponibles)
-enum custom_keycodes {
-    RGB_TOG = SAFE_RANGE,
-    RGB_MOD,
-    RGB_HUI,
-    RGB_HUD,
-    RGB_SAI,
-    RGB_SAD,
-    RGB_VAI,
-    RGB_VAD
-};
-
 #define _DEFAULT 0
 #define _PERCENT 1
 #define _CODE 2
+#define _CONFIG 3
 
 // Inclure le fichier d'images des couches
 #include "layer_images.h"
- 
 
 // Variables pour gérer le dé-bouncing des encodeurs
 static uint32_t last_encoder_update_time[2] = {0, 0}; // Deux encodeurs
 const uint32_t encoder_update_interval = 50; // Intervalle minimal entre deux mises à jour en millisecondes
 
-// Variables pour gérer l'affichage des couches actives
-static uint8_t current_layer = 0;
+static void render_layer_status(uint8_t layer) {
+    switch (layer) {
+        case _DEFAULT:
+        case _PERCENT:
+        case _CODE:
+            oled_write_raw_P(layer_icons[layer], _IMAGE_SIZE);
+            break;
+        case _CONFIG:
+            oled_write_ln_P(PSTR("CONFIG"), false);
+            break;
+        default:
+            oled_write_ln_P(PSTR("Inconnu"), false);
+            break;
+    }
+}
 
 bool oled_task_user(void) {
-    if (!is_keyboard_master()) {
-        // Affiche l'icône de la couche actuelle sur l'écran secondaire
-        oled_write_raw_P(layer_icons[current_layer], sizeof(layer_icons[0]));
-    } 
+    static uint8_t last_rendered_layer = 255;
+    uint8_t layer = get_highest_layer(layer_state);
+
+    if (layer != last_rendered_layer) {
+        oled_clear();
+        last_rendered_layer = layer;
+    }
+
+    render_layer_status(layer);
     return false; // Empêche le dessin par défaut du clavier
 }
 
 // Configuration des LEDs RGB avec effet goutte d'eau
 void keyboard_post_init_user(void) {
-    // Activer les LEDs RGB
+    // Activer les LEDs RGB au boot, mais ne pas écraser le mode/couleur stockés en EEPROM.
     rgb_matrix_enable();
-    
-    // Définir la couleur de base blanche (mode RGB)
-    rgb_matrix_sethsv(0, 0, 255);  // HSV: 0 = rouge, 0 = pas de saturation (blanc), 255 = luminosité max
-    
-    // Activer l'effet goutte d'eau (solid reactive)
-    // Utiliser l'ID de l'effet au lieu de la constante qui n'est pas disponible
-    rgb_matrix_mode_noeeprom(1);  // Mode 1 correspond à SOLID_REACTIVE_SIMPLE dans la plupart des configurations
-    
-    // Configurer la vitesse de l'effet (plus petit = plus rapide)
-    rgb_matrix_set_speed(128);
 }
 
 // Fonction pour envoyer uniquement des événements de défilement de souris sans affecter le volume
@@ -80,12 +76,15 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
             send_mouse_scroll(false); // Défilement vers le bas sans affecter le volume
         }
     } else if (index == 1) { // Encodeur de droite
+        uint8_t current_layer = get_highest_layer(layer_state);
+        if (current_layer > _CODE) {
+            current_layer = _DEFAULT;
+        }
+
         if (clockwise) {
-            current_layer = (current_layer + 1) % 3; // Passe à la couche suivante (0 -> 1 -> 2 -> 0)
-            layer_move(current_layer);
+            layer_move((current_layer + 1) % 3); // Passe à la couche suivante (0 -> 1 -> 2 -> 0)
         } else {
-            current_layer = (current_layer == 0) ? 2 : current_layer - 1; // Reviens à la couche précédente
-            layer_move(current_layer);
+            layer_move((current_layer == _DEFAULT) ? _CODE : current_layer - 1); // Reviens à la couche précédente
         }
     }
 
@@ -94,50 +93,6 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 // Fonction pour gérer les touches multimédia dans la couche _PERCENT
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // Gestion des keycodes RGB_MATRIX custom
-    switch (keycode) {
-        case RGB_TOG:
-            if (record->event.pressed) {
-                rgb_matrix_toggle();
-            }
-            return false;
-        case RGB_MOD:
-            if (record->event.pressed) {
-                rgb_matrix_step();
-            }
-            return false;
-        case RGB_HUI:
-            if (record->event.pressed) {
-                rgb_matrix_increase_hue();
-            }
-            return false;
-        case RGB_HUD:
-            if (record->event.pressed) {
-                rgb_matrix_decrease_hue();
-            }
-            return false;
-        case RGB_SAI:
-            if (record->event.pressed) {
-                rgb_matrix_increase_sat();
-            }
-            return false;
-        case RGB_SAD:
-            if (record->event.pressed) {
-                rgb_matrix_decrease_sat();
-            }
-            return false;
-        case RGB_VAI:
-            if (record->event.pressed) {
-                rgb_matrix_increase_val();
-            }
-            return false;
-        case RGB_VAD:
-            if (record->event.pressed) {
-                rgb_matrix_decrease_val();
-            }
-            return false;
-    }
-
     // Vérifie si nous sommes dans la couche _PERCENT
     if (IS_LAYER_ON(_PERCENT)) {
         // Intercepte les touches !@#$% et les remplace par des touches multimédia
@@ -174,30 +129,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 break;
         }
     }
-    
+
     // Traitement normal pour toutes les autres touches
     return true;
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    if (!is_keyboard_master()) {
-        return state; // S'assure que cette partie ne tourne que sur le maître
-    }
-    oled_write_ln_P(PSTR("Mode: "), false);
-    switch (get_highest_layer(state)) {
-        case 0:
-            oled_write_raw_P(layer_icons[_DEFAULT], _IMAGE_SIZE);
-            break;
-        case 1:
-            oled_write_raw_P(layer_icons[_PERCENT], _IMAGE_SIZE);
-            break;
-        case 2:  // Corrigé de 4 à 2 pour correspondre à la définition _CODE
-            oled_write_raw_P(layer_icons[_CODE], _IMAGE_SIZE);
-            break;
-        default:
-            oled_write_ln_P(PSTR("Inconnu"), false);
-            break;
-    }
-
-    return state;
 }
