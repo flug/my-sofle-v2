@@ -14,6 +14,7 @@ Configuration de firmware QMK personnalisée pour le clavier **SplitKB Aurora So
   - Gauche : Défilement souris (scroll vertical)
   - Droit : Navigation entre les couches
 - 🎹 **3 couches actives** + 1 couche de configuration RGB/média
+- 🔧 **Support VIA** activé côté firmware pour le remapping dynamique, si l'application VIA dispose d'une définition compatible
 - 🎵 **Touches multimédia** sur la couche symboles
 - ⚡ **Optimisé** pour économiser l'espace firmware
 
@@ -89,7 +90,7 @@ my-sofle-v2/
 ├── .github/workflows/
 │   └── qmk.yml          # CI/CD automatique
 ├── Makefile             # Commandes de build simplifiées
-└── copy_to_qmk.bat      # Copie les fichiers vers QMK (Windows)
+└── compile_qmk.bat     # Compilation rapide sous Windows
 ```
 
 ### Modifier le layout
@@ -104,6 +105,10 @@ my-sofle-v2/
 
 **Option 2 : Édition directe**
 Modifiez `default/keymap.h` pour changer la logique (encodeurs, OLED, RGB, etc.)
+
+### VIA
+
+Le firmware active `VIA_ENABLE = yes`. Si l'application VIA ne détecte pas le clavier après flash, importez une définition compatible avec `splitkb/aurora/sofle_v2/rev1` ou utilisez la version web de VIA avec l'onglet design activé.
 
 ### Tester les modifications
 

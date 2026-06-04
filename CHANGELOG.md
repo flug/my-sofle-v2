@@ -63,7 +63,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 - `RGBLIGHT_ENABLE = no`
 - `CONSOLE_ENABLE = no` (économie d'espace)
 - `COMMAND_ENABLE = no` (économie d'espace)
-- `MOUSEKEY_ENABLE = no` (économie d'espace)
+- `MOUSEKEY_ENABLE = yes` (nécessaire pour le scroll souris de l'encodeur)
 
 [Unreleased]: https://github.com/flug/my-sofle-v2/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/flug/my-sofle-v2/releases/tag/v1.0.0
