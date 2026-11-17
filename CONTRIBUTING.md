@@ -89,10 +89,12 @@ qmk userspace-compile
 ```
 
 ### Vérifier la taille
+`qmk userspace-compile` n'affiche pas le détail du build. Pour voir la taille du firmware, compilez directement la cible :
 ```bash
-# Après compilation, vérifiez dans la sortie :
-# "Checking file size of splitkb_aurora_sofle_v2_rev1_flug_liatris.uf2"
+qmk compile -kb splitkb/aurora/sofle_v2/rev1 -km flug -e CONVERT_TO=liatris
+# La sortie se termine par le tableau text/data/bss de arm-none-eabi-size
 ```
+Le Liatris (RP2040) dispose de 16 Mo de flash : la taille n'est en pratique jamais limitante, mais surveillez son évolution.
 
 ### Flasher
 1. Double-clic sur le bouton RESET du Liatris

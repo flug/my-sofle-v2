@@ -18,18 +18,18 @@ permissions:
 jobs:
   build:
     name: Build
-    uses: qmk/.github/.github/workflows/qmk_userspace_build.yml@main
+    uses: qmk/.github/.github/workflows/qmk_userspace_build.yml@01daf5113fa50804558f21cc074ab99ba84ddeaf # main
     permissions:
       contents: write
     with:
       qmk_repo: qmk/qmk_firmware
       qmk_ref: master
 
-  # Remplace la release "latest" par le dernier firmware (pas sur les PR)
+  # Remplace la release "latest" par le dernier firmware de main uniquement
   publish:
     name: Publish
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main'
     needs: build
-    uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@main
+    uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@01daf5113fa50804558f21cc074ab99ba84ddeaf # main
     permissions:
       contents: write

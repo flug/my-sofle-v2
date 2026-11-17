@@ -1,6 +1,6 @@
 # Sofle v2 Custom Firmware
 
-[![Build QMK Firmware](https://github.com/flug/my-sofle-v2/actions/workflows/qmk.yml/badge.svg)](https://github.com/flug/my-sofle-v2/actions/workflows/qmk.yml)
+[![Build QMK Firmware](https://github.com/flug/my-sofle-v2/actions/workflows/build.yml/badge.svg)](https://github.com/flug/my-sofle-v2/actions/workflows/build.yml)
 [![QMK](https://img.shields.io/badge/QMK-Firmware-blue)](https://qmk.fm/)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
@@ -47,6 +47,7 @@ Configuration de firmware QMK personnalisée pour le clavier **SplitKB Aurora So
 1. Téléchargez [QMK MSYS](https://msys.qmk.fm/)
 2. Installez dans `C:\QMK_MSYS` (ou autre emplacement)
 3. Ouvrez **QMK MSYS** depuis le menu Démarrer
+4. Lancez `qmk setup` pour installer `qmk_firmware`
 
 **Linux/Mac:**
 ```bash
