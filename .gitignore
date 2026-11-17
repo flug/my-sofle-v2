@@ -1,12 +1,3 @@
-# Fichiers générés par QMK
-default/keymap.c
-
-# Scripts de copie Windows spécifiques à l'environnement
-copy_to_qmk.bat
-
-# Mais garder les scripts utiles
-!compile_qmk.bat
-
 # Fichiers de build
 *.hex
 *.bin
@@ -35,4 +26,6 @@ venv/
 
 # OS
 Thumbs.db
-.DS_Store
+
+# Clone local de QMK (CI)
+qmk_firmware/

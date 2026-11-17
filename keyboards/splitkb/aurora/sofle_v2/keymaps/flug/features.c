@@ -1,8 +1,4 @@
-#pragma once
-
-#include "timer.h"
-#include "quantum.h"
-#include "rgb_matrix.h"
+#include QMK_KEYBOARD_H
 
 #define _DEFAULT 0
 #define _PERCENT 1
@@ -88,7 +84,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         }
     }
 
-    return true; // Indique que l'action est gérée ici
+    return false; // Empêche encoder_update_kb d'ajouter son comportement par défaut (volume / page up-down)
 }
 
 // Fonction pour gérer les touches multimédia dans la couche _PERCENT

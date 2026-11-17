@@ -32,11 +32,11 @@ Configuration de firmware QMK personnalisée pour le clavier **SplitKB Aurora So
 ### Télécharger le firmware pré-compilé
 
 1. Allez dans [Releases](https://github.com/flug/my-sofle-v2/releases)
-2. Téléchargez le fichier `firmware.uf2` de la dernière release
+2. Téléchargez le fichier `.uf2` de la release `latest`
 3. Passez votre clavier en mode bootloader :
    - Double-clic sur le bouton **RESET** du contrôleur Liatris
    - Un lecteur USB nommé `RPI-RP2` devrait apparaître
-4. Copiez le fichier `firmware.uf2` sur ce lecteur
+4. Copiez le fichier `.uf2` sur ce lecteur
 5. Le clavier redémarre automatiquement avec le nouveau firmware
 
 ## 🛠️ Compilation locale
@@ -55,24 +55,30 @@ python3 -m pip install --user qmk
 qmk setup
 ```
 
+### Configurer le userspace (une seule fois)
+
+Ce dépôt est un [QMK Userspace](https://docs.qmk.fm/newbs_external_userspace) : le keymap vit ici, en dehors de `qmk_firmware`.
+
+```bash
+cd /chemin/vers/my-sofle-v2
+qmk config user.overlay_dir="$(realpath .)"
+```
+
 ### Compiler
 
 ```bash
-# Se positionner dans le dossier du projet
-cd /chemin/vers/my-sofle-v2
-
-# Convertir le JSON en C (si modifié)
-make convert
-
-# Compiler le firmware
-make compile
+qmk userspace-compile
 ```
 
-Le fichier `.uf2` sera généré dans `~/qmk_firmware/.build/`
+Le fichier `splitkb_aurora_sofle_v2_rev1_flug_liatris.uf2` est généré à la racine du dépôt.
 
-### Script Windows (raccourci)
+### Flasher
 
-Double-cliquez sur `compile_qmk.bat` pour compiler automatiquement.
+```bash
+qmk flash -kb splitkb/aurora/sofle_v2/rev1 -km flug -e CONVERT_TO=liatris
+```
+
+Ou copiez le `.uf2` sur le lecteur `RPI-RP2` (mode bootloader).
 
 ## 🔧 Développement
 
@@ -80,63 +86,41 @@ Double-cliquez sur `compile_qmk.bat` pour compiler automatiquement.
 
 ```
 my-sofle-v2/
-├── default/              # Fichiers source du firmware
-│   ├── keymap.h         # Logique principale (encodeurs, OLED, RGB)
-│   ├── layer_images.h   # Icônes OLED des couches (512 bytes chacune)
-│   ├── config.h         # Configuration QMK et RGB Matrix
-│   └── rules.mk         # Features QMK activées/désactivées
-├── map/
-│   └── keymap.json      # Layout des touches (format QMK Configurator)
-├── .github/workflows/
-│   └── qmk.yml          # CI/CD automatique
-├── Makefile             # Commandes de build simplifiées
-└── compile_qmk.bat     # Compilation rapide sous Windows
+├── qmk.json                              # Cibles de build du userspace
+├── keyboards/splitkb/aurora/sofle_v2/keymaps/flug/
+│   ├── keymap.json                       # Layout des touches (format QMK Configurator)
+│   ├── features.c                        # Logique (encodeurs, OLED, RGB, multimédia)
+│   ├── layer_images.h                    # Icônes OLED des couches (512 bytes chacune)
+│   ├── config.h                          # Configuration QMK et RGB Matrix
+│   └── rules.mk                          # Features QMK activées/désactivées
+└── .github/workflows/build.yml           # CI/CD (workflows officiels QMK Userspace)
 ```
 
 ### Modifier le layout
 
 **Option 1 : QMK Configurator (GUI)**
 1. Allez sur [config.qmk.fm](https://config.qmk.fm)
-2. Chargez `map/keymap.json`
-3. Modifiez les touches
-4. Téléchargez le JSON
-5. Remplacez `map/keymap.json`
-6. Exécutez `make convert` pour générer le C
+2. Chargez `keyboards/splitkb/aurora/sofle_v2/keymaps/flug/keymap.json`
+3. Modifiez les touches puis téléchargez le JSON
+4. Remplacez le `keymap.json` du dépôt
+
+QMK compile directement le `keymap.json`, aucune conversion en C n'est nécessaire.
 
 **Option 2 : Édition directe**
-Modifiez `default/keymap.h` pour changer la logique (encodeurs, OLED, RGB, etc.)
+Modifiez `features.c` pour changer la logique (encodeurs, OLED, RGB, etc.)
 
 ### VIA
 
 Le firmware active `VIA_ENABLE = yes`. Si l'application VIA ne détecte pas le clavier après flash, importez une définition compatible avec `splitkb/aurora/sofle_v2/rev1` ou utilisez la version web de VIA avec l'onglet design activé.
 
-### Tester les modifications
-
-```bash
-# Compiler
-make compile
-
-# Flasher (le clavier doit être en mode bootloader)
-# Copiez manuellement le .uf2 ou utilisez:
-qmk flash -e CONVERT_TO=liatris -kb splitkb/aurora/sofle_v2/rev1 -km custom
-```
-
 ## 🤖 CI/CD Automatique
 
-Le firmware est compilé automatiquement par GitHub Actions :
+Le firmware est compilé par GitHub Actions avec les workflows officiels QMK Userspace :
 
-- ✅ **À chaque push** sur `main` → Release standard
-- 📅 **Tous les lundis à 2h UTC** → Build automatique avec la dernière version de QMK
-- 🚀 **Déclenchement manuel** → Build à la demande
-
-Les builds automatiques/manuels sont marqués comme **pre-release** et incluent un fichier `build-info.txt` avec les détails de compilation.
-
-### Déclencher un build manuel
-
-1. Allez dans **Actions** → **Build QMK Firmware**
-2. Cliquez sur **Run workflow**
-3. (Optionnel) Spécifiez une branche QMK différente
-4. Récupérez le firmware dans les **Releases**
+- ✅ **Pull request** → Build de vérification (firmware disponible en artifact)
+- 🚀 **Push sur `main`** → Build + mise à jour de la release [`latest`](https://github.com/flug/my-sofle-v2/releases/tag/latest)
+- 📅 **Tous les lundis à 2h UTC** → Rebuild avec la dernière version de QMK
+- 🖱️ **Déclenchement manuel** → **Actions** → **Build QMK firmware** → **Run workflow**
 
 ## 🎮 Fonctionnalités spéciales
 

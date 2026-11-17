@@ -7,6 +7,22 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Changed
+- Migration vers QMK Userspace : keymap dans `keyboards/splitkb/aurora/sofle_v2/keymaps/flug/`, `qmk.json` à la racine
+- `keymap.json` compilé directement (plus de `json2c`), code C déplacé de `keymap.h` vers `features.c` (ajouté via `SRC +=`)
+- CI basée sur les workflows officiels QMK Userspace, permissions minimales, release unique `latest`
+
+### Fixed
+- Le code personnalisé (OLED, encodeurs, RGB, multimédia) n'était pas inclus dans le firmware
+- Les encodeurs déclenchaient aussi le comportement par défaut du clavier (volume, page up/down)
+
+### Removed
+- `Makefile`, `compile_qmk.bat` et le lien symbolique vers `qmk_firmware`
+
+### Added
+- Dependabot pour les GitHub Actions
+- Configuration CodeRabbit
+
 ### Added
 - CI/CD automatique avec builds hebdomadaires
 - Build manuel à la demande via GitHub Actions

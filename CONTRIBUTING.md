@@ -28,7 +28,7 @@ Merci de votre intérêt pour contribuer à ce projet de firmware QMK !
 2. **Créez une branche** : `git checkout -b feature/ma-fonctionnalite`
 3. **Testez vos modifications** :
    ```bash
-   make compile
+   qmk userspace-compile
    # Flashez et testez sur le clavier physique
    ```
 4. **Vérifiez l'espace firmware** :
@@ -85,13 +85,13 @@ Le Liatris (RP2040) a des limites. Lors de l'ajout de features :
 
 ### Compiler
 ```bash
-make compile
+qmk userspace-compile
 ```
 
 ### Vérifier la taille
 ```bash
 # Après compilation, vérifiez dans la sortie :
-# "Checking file size of splitkb_aurora_sofle_v2_rev1_custom_liatris.uf2"
+# "Checking file size of splitkb_aurora_sofle_v2_rev1_flug_liatris.uf2"
 ```
 
 ### Flasher
@@ -102,7 +102,7 @@ make compile
 ## 🐛 Déboguer
 
 ### Activer la console
-Dans `default/rules.mk`, temporairement :
+Dans `keyboards/splitkb/aurora/sofle_v2/keymaps/flug/rules.mk`, temporairement :
 ```makefile
 CONSOLE_ENABLE = yes
 ```

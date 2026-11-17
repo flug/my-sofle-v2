@@ -12,3 +12,6 @@ EXTRAFLAGS += -flto
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
 MOUSEKEY_ENABLE = yes  # Nécessaire pour KC_MS_WH_UP/DOWN (scroll souris encodeur)
+
+# Code personnalisé : OLED, encodeurs, RGB, touches multimédia
+SRC += features.c
