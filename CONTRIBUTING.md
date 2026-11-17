@@ -89,13 +89,22 @@ qmk userspace-compile
 ```
 
 ### Vérifier la taille
-`qmk userspace-compile` n'affiche pas le détail du build. Pour voir la taille du firmware, compilez directement la cible :
-```bash
-qmk compile -kb splitkb/aurora/sofle_v2/rev1 -km flug -e CONVERT_TO=liatris
-# La sortie se termine par le tableau text/data/bss de arm-none-eabi-size
-```
-Le Liatris (RP2040) dispose de 16 Mo de flash : la taille n'est en pratique jamais limitante, mais surveillez son évolution.
+<!-- coderabbit-ai-generated:v1 -->
 
+<!-- coderabbit-ai-generated-section:v1:52ade65f3112e84be9d8fec0ca57027b6e3e432d1534be4483a5c2cd38f5d178 -->
+
+Après `qmk userspace-compile`, depuis la racine du dépôt (Linux, macOS ou QMK MSYS), mesurez le fichier produit :
+```bash
+wc -c < splitkb_aurora_sofle_v2_rev1_flug_liatris.uf2
+```
+Le résultat est la taille du fichier en octets. Notez sa valeur avant et après vos modifications dans la PR.
+
+Comparez cette taille à la flash disponible pour le firmware dans la configuration QMK utilisée (région flash du script de liaison, moins les zones réservées, notamment à l’EEPROM). Le Liatris possède 16 Mio physiques (16 777 216 octets), mais QMK peut configurer une région plus petite : ne prenez pas toute la capacité physique comme budget utilisable.
+
+Le [format UF2](https://github.com/microsoft/uf2#file-format) inclut des en-têtes et du remplissage : sa taille sur disque surestime les données flashées. Une taille inférieure au budget disponible constitue donc une comparaison prudente ; si elle le dépasse, vérifiez les sections et adresses de l’ELF/map du build avant de conclure à un dépassement réel. Cette mesure ne dépend pas des journaux de compilation.
+
+
+<!-- /coderabbit-ai-generated:v1 -->
 ### Flasher
 1. Double-clic sur le bouton RESET du Liatris
 2. Copiez le `.uf2` sur le lecteur `RPI-RP2`
