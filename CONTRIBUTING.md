@@ -28,7 +28,7 @@ Merci de votre intérêt pour contribuer à ce projet de firmware QMK !
 2. **Créez une branche** : `git checkout -b feature/ma-fonctionnalite`
 3. **Testez vos modifications** :
    ```bash
-   make compile
+   qmk userspace-compile
    # Flashez et testez sur le clavier physique
    ```
 4. **Vérifiez l'espace firmware** :
@@ -85,15 +85,26 @@ Le Liatris (RP2040) a des limites. Lors de l'ajout de features :
 
 ### Compiler
 ```bash
-make compile
+qmk userspace-compile
 ```
 
 ### Vérifier la taille
-```bash
-# Après compilation, vérifiez dans la sortie :
-# "Checking file size of splitkb_aurora_sofle_v2_rev1_custom_liatris.uf2"
-```
+<!-- coderabbit-ai-generated:v1 -->
 
+<!-- coderabbit-ai-generated-section:v1:52ade65f3112e84be9d8fec0ca57027b6e3e432d1534be4483a5c2cd38f5d178 -->
+
+Après `qmk userspace-compile`, depuis la racine du dépôt (Linux, macOS ou QMK MSYS), mesurez le fichier produit :
+```bash
+wc -c < splitkb_aurora_sofle_v2_rev1_flug_liatris.uf2
+```
+Le résultat est la taille du fichier en octets. Notez sa valeur avant et après vos modifications dans la PR.
+
+Comparez cette taille à la flash disponible pour le firmware dans la configuration QMK utilisée (région flash du script de liaison, moins les zones réservées, notamment à l’EEPROM). Le Liatris possède 16 Mio physiques (16 777 216 octets), mais QMK peut configurer une région plus petite : ne prenez pas toute la capacité physique comme budget utilisable.
+
+Le [format UF2](https://github.com/microsoft/uf2#file-format) inclut des en-têtes et du remplissage : sa taille sur disque surestime les données flashées. Une taille inférieure au budget disponible constitue donc une comparaison prudente ; si elle le dépasse, vérifiez les sections et adresses de l’ELF/map du build avant de conclure à un dépassement réel. Cette mesure ne dépend pas des journaux de compilation.
+
+
+<!-- /coderabbit-ai-generated:v1 -->
 ### Flasher
 1. Double-clic sur le bouton RESET du Liatris
 2. Copiez le `.uf2` sur le lecteur `RPI-RP2`
@@ -102,7 +113,7 @@ make compile
 ## 🐛 Déboguer
 
 ### Activer la console
-Dans `default/rules.mk`, temporairement :
+Dans `keyboards/splitkb/aurora/sofle_v2/keymaps/flug/rules.mk`, temporairement :
 ```makefile
 CONSOLE_ENABLE = yes
 ```

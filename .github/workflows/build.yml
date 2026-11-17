@@ -1,0 +1,35 @@
+name: Build QMK firmware
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  # Build hebdomadaire avec la dernière version de QMK
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    uses: qmk/.github/.github/workflows/qmk_userspace_build.yml@01daf5113fa50804558f21cc074ab99ba84ddeaf # main
+    permissions:
+      contents: write
+    with:
+      qmk_repo: qmk/qmk_firmware
+      qmk_ref: master
+
+  # Remplace la release "latest" par le dernier firmware de main uniquement
+  publish:
+    name: Publish
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    uses: qmk/.github/.github/workflows/qmk_userspace_publish.yml@01daf5113fa50804558f21cc074ab99ba84ddeaf # main
+    permissions:
+      contents: write

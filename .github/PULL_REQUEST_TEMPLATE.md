@@ -59,11 +59,11 @@ Différence : +/- XXX bytes
 <!-- Décrivez les changements techniques en détail -->
 
 **Fichiers modifiés :**
-- [ ] `default/keymap.h`
-- [ ] `default/config.h`
-- [ ] `default/rules.mk`
-- [ ] `default/layer_images.h`
-- [ ] `map/keymap.json`
+- [ ] `keymap.json`
+- [ ] `features.c`
+- [ ] `config.h`
+- [ ] `rules.mk`
+- [ ] `layer_images.h`
 - [ ] Documentation
 - [ ] CI/CD
 - [ ] Autre : ____________
